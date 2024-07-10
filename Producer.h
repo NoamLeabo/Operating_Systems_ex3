@@ -11,7 +11,7 @@ using namespace std;
 class Producer
 {
 private:
-    Bounded_Buffer* bBuffer;
+    Bounded_Buffer *bBuffer;
     string articals[3] = {"SPORTS", "NEWS", "WEATHER"};
     int idP;
     int counters[3] = {0, 0, 0};
@@ -20,7 +20,7 @@ private:
 public:
     Producer(int bufferSize, int idP, int numOfArticals);
     void generate();
-    Bounded_Buffer* getBounded_Buffer();
+    Bounded_Buffer *getBounded_Buffer();
     void PDelete();
 };
 

@@ -5,34 +5,40 @@
 #include "Dispatcher.h"
 #include "Ceditor.h"
 #include "Smanager.h"
-#include "Config.h" 
+#include "Config.h"
 
-void* producer_thread(void* arg) {
-    Producer* producer = (Producer*)arg;
+void *producer_thread(void *arg)
+{
+    Producer *producer = (Producer *)arg;
     producer->generate();
     pthread_exit(NULL);
 }
 
-void* dispatcher_thread(void* arg) {
-    Dispatcher* dispatcher = (Dispatcher*)arg;
+void *dispatcher_thread(void *arg)
+{
+    Dispatcher *dispatcher = (Dispatcher *)arg;
     dispatcher->dispatch();
     pthread_exit(NULL);
 }
 
-void* ceditor_thread(void* arg) {
-    Ceditor* ceditor = (Ceditor*)arg;
+void *ceditor_thread(void *arg)
+{
+    Ceditor *ceditor = (Ceditor *)arg;
     ceditor->edit();
     pthread_exit(NULL);
 }
 
-void* smanager_thread(void* arg) {
-    Smanager* smanager = (Smanager*)arg;
+void *smanager_thread(void *arg)
+{
+    Smanager *smanager = (Smanager *)arg;
     smanager->print();
     pthread_exit(NULL);
 }
 
-int main(int argc, char* argv[]) {
-    if (argc < 2) {
+int main(int argc, char *argv[])
+{
+    if (argc < 2)
+    {
         std::cerr << "Usage: " << argv[0] << " <config_file>" << std::endl;
         return 1;
     }
@@ -40,10 +46,11 @@ int main(int argc, char* argv[]) {
     // read the configuration from the command line argument
     Config config = readConfig(argv[1]);
 
-    std::vector<Producer*> producers;
-    for (const auto& producerConfig : config.producers) {
+    std::vector<Producer *> producers;
+    for (const auto &producerConfig : config.producers)
+    {
         // create a new Producer object with the specified configuration
-        Producer* producer = new Producer(producerConfig.queueSize, producerConfig.id, producerConfig.numProducts);
+        Producer *producer = new Producer(producerConfig.queueSize, producerConfig.id, producerConfig.numProducts);
         producers.push_back(producer);
     }
 
@@ -55,7 +62,8 @@ int main(int argc, char* argv[]) {
     Smanager smanager;
 
     // add the bounded buffers to the dispatcher
-    for (auto& producer : producers) {
+    for (auto &producer : producers)
+    {
         dispatcher.addBounded_Bufer(producer->getBounded_Buffer());
     }
 
@@ -75,7 +83,8 @@ int main(int argc, char* argv[]) {
     pthread_t smanager_thread_id;
 
     // create producer threads
-    for (size_t i = 0; i < config.producers.size(); ++i) {
+    for (size_t i = 0; i < config.producers.size(); ++i)
+    {
         pthread_create(&producer_threads[i], NULL, producer_thread, producers[i]);
     }
 
@@ -91,7 +100,8 @@ int main(int argc, char* argv[]) {
     pthread_create(&smanager_thread_id, NULL, smanager_thread, &smanager);
 
     // join producer threads
-    for (size_t i = 0; i < config.producers.size(); ++i) {
+    for (size_t i = 0; i < config.producers.size(); ++i)
+    {
         pthread_join(producer_threads[i], NULL);
     }
 
@@ -99,7 +109,8 @@ int main(int argc, char* argv[]) {
     pthread_join(dispatcher_thread_id, NULL);
 
     // join co-editor threads
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 3; i++)
+    {
         pthread_join(ceditor_thread_ids[i], NULL);
     }
 
@@ -107,7 +118,8 @@ int main(int argc, char* argv[]) {
     pthread_join(smanager_thread_id, NULL);
 
     // clean up producers to avoid memory leaks
-    for (auto& producer : producers) {
+    for (auto &producer : producers)
+    {
         delete producer;
     }
 

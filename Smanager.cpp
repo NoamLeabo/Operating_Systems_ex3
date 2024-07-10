@@ -7,26 +7,32 @@
 using namespace std;
 
 // constructor
-Smanager::Smanager(){
+Smanager::Smanager()
+{
     // create a new buffer
     this->bBuffer = new Bounded_Buffer(50);
 }
 
-void Smanager::print() {
+void Smanager::print()
+{
     // print the articles
-    while (1) {
+    while (1)
+    {
         // remove the article
         std::string message = this->bBuffer->remove();
         // if the article is "DONE", increment the counter
-        if (message == "DONE") {
+        if (message == "DONE")
+        {
             this->numOfDones++;
             // if the counter is 3, break
-            if (this->numOfDones == 3) {
+            if (this->numOfDones == 3)
+            {
                 break;
             }
-        } 
+        }
         // else print the article
-        else {
+        else
+        {
             std::cout << message << std::endl;
         }
     }

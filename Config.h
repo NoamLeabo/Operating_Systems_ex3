@@ -4,17 +4,19 @@
 #include <string>
 #include <vector>
 
-struct ProducerConfig {
+struct ProducerConfig
+{
     int id;
     int numProducts;
     int queueSize;
 };
 
-struct Config {
+struct Config
+{
     std::vector<ProducerConfig> producers;
     int coEditorQueueSize;
 };
 
-Config readConfig(const std::string& filename);
+Config readConfig(const std::string &filename);
 
 #endif // CONFIG_READER_H

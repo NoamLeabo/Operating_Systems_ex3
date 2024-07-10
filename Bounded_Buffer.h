@@ -15,9 +15,9 @@ private:
     vector<string> bounded_Buffer;
     int size;
     int index;
-    sem_t space; 
-    sem_t items; 
-    pthread_mutex_t mutex;  
+    sem_t space;
+    sem_t items;
+    pthread_mutex_t mutex;
 
 public:
     Bounded_Buffer(int size);

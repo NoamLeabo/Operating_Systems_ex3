@@ -10,16 +10,16 @@ Bounded_Buffer::Bounded_Buffer(int size) : size(size), index(0)
 {
     // initialize semaphores and mutex
     this->bounded_Buffer = std::vector<string>(0);
-    sem_init(&space, 0, size);  
-    sem_init(&items, 0, 0);     
-    pthread_mutex_init(&mutex, NULL); 
+    sem_init(&space, 0, size);
+    sem_init(&items, 0, 0);
+    pthread_mutex_init(&mutex, NULL);
 }
 
 // add element to buffer
 void Bounded_Buffer::insert(string element)
 {
     // wait for a space to be available
-    sem_wait(&space);  
+    sem_wait(&space);
     // lock the buffer
     pthread_mutex_lock(&mutex);
 
@@ -27,7 +27,7 @@ void Bounded_Buffer::insert(string element)
     this->bounded_Buffer.push_back(element);
 
     // unlock all
-    pthread_mutex_unlock(&mutex);  
+    pthread_mutex_unlock(&mutex);
     sem_post(&items);
 }
 
@@ -35,23 +35,24 @@ void Bounded_Buffer::insert(string element)
 string Bounded_Buffer::remove()
 {
     // wait for an item to be available
-    sem_wait(&items); 
+    sem_wait(&items);
     // lock the buffer
-    pthread_mutex_lock(&mutex);  
+    pthread_mutex_lock(&mutex);
 
     // remove element from buffer
     string front_of_buffer = this->bounded_Buffer.front();
     this->bounded_Buffer.erase(this->bounded_Buffer.begin());
 
     // unlock all
-    pthread_mutex_unlock(&mutex); 
-    sem_post(&space);  
+    pthread_mutex_unlock(&mutex);
+    sem_post(&space);
 
     return front_of_buffer;
 }
 
 // get size of buffer
-int Bounded_Buffer::getSize() {
+int Bounded_Buffer::getSize()
+{
     // lock the buffer
     pthread_mutex_lock(&mutex);
     // get size of buffer
@@ -62,7 +63,8 @@ int Bounded_Buffer::getSize() {
 }
 
 // check if buffer is empty
-bool Bounded_Buffer::isEmpty() {
+bool Bounded_Buffer::isEmpty()
+{
     // lock the buffer
     pthread_mutex_lock(&mutex);
     // check if buffer is empty

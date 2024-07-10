@@ -10,7 +10,6 @@ class Buffer
 private:
     vector<string> buffer;
     int index;
-    
 
 public:
     Buffer();

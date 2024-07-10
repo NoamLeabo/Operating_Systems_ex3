@@ -25,16 +25,21 @@ void Ceditor::addSmanager(Bounded_Buffer *bBuffer)
     this->smanager = bBuffer;
 }
 
-void Ceditor::edit() {
+void Ceditor::edit()
+{
     // "edit" the articles
-    while (1) {
+    while (1)
+    {
         // remove the article
         std::string article = this->forEdit->remove();
         // if the article is "DONE", insert it and break
-        if (article == "DONE") {
+        if (article == "DONE")
+        {
             this->smanager->insert("DONE");
             break;
-        } else {
+        }
+        else
+        {
             // "edit" the article
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
             // insert the article to the smanager
