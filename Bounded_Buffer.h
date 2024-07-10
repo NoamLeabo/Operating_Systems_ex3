@@ -23,7 +23,6 @@ public:
     Bounded_Buffer(int size);
     void insert(string element);
     string remove();
-    string getElementByIndex(int index);
     int getSize();
     bool isEmpty();
 };
