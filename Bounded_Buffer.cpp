@@ -64,3 +64,11 @@ int Bounded_Buffer::getSize() {
     pthread_mutex_unlock(&mutex);
     return size;
 }
+
+// check if buffer is empty
+bool Bounded_Buffer::isEmpty() {
+    pthread_mutex_lock(&mutex);
+    bool empty = this->bounded_Buffer.empty();
+    pthread_mutex_unlock(&mutex);
+    return empty;
+}

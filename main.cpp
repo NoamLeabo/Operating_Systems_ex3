@@ -5,10 +5,7 @@
 #include "Dispatcher.h"
 #include "Ceditor.h"
 #include "Smanager.h"
-
-#define NUM_PRODUCERS 3
-#define NUM_ARTICLES 3
-#define BUFFER_SIZE 1
+#include "Config.cpp"  // Assuming Config.cpp includes Config struct and readConfig function
 
 void* producer_thread(void* arg) {
     Producer* producer = (Producer*)arg;
@@ -34,39 +31,47 @@ void* smanager_thread(void* arg) {
     pthread_exit(NULL);
 }
 
-int main() {
-    Producer p1(BUFFER_SIZE, 1, NUM_ARTICLES);
-    Producer p2(BUFFER_SIZE, 2, NUM_ARTICLES);
-    Producer p3(BUFFER_SIZE, 3, NUM_ARTICLES);
+int main(int argc, char* argv[]) {
+    if (argc < 2) {
+        std::cerr << "Usage: " << argv[0] << " <config_file>" << std::endl;
+        return 1;
+    }
+
+    Config config = readConfig(argv[1]);
+
+    std::vector<Producer*> producers;
+    for (const auto& producerConfig : config.producers) {
+        Producer* producer = new Producer(producerConfig.queueSize, producerConfig.id, producerConfig.numProducts);
+        producers.push_back(producer);
+    }
 
     Dispatcher dispatcher;
-    Ceditor sport(BUFFER_SIZE, 1);
-    Ceditor news(BUFFER_SIZE, 2);
-    Ceditor weather(BUFFER_SIZE, 3);
+    Ceditor sport(config.coEditorQueueSize, 1);
+    Ceditor news(config.coEditorQueueSize, 2);
+    Ceditor weather(config.coEditorQueueSize, 3);
     Smanager smanager;
+
+    for (auto& producer : producers) {
+        dispatcher.addBounded_Bufer(producer->getBounded_Buffer());
+    }
 
     dispatcher.addNEWS(news.getBounded_Buffer());
     dispatcher.addSPORT(sport.getBounded_Buffer());
     dispatcher.addWEATHER(weather.getBounded_Buffer());
 
-    dispatcher.addBounded_Bufer(p1.getBounded_Buffer());
-    dispatcher.addBounded_Bufer(p2.getBounded_Buffer());
-    dispatcher.addBounded_Bufer(p3.getBounded_Buffer());
-
     sport.addSmanager(smanager.getBounded_Buffer());
     news.addSmanager(smanager.getBounded_Buffer());
     weather.addSmanager(smanager.getBounded_Buffer());
 
-    
-    pthread_t producer_threads[NUM_PRODUCERS];
+    pthread_t producer_threads[config.producers.size()];
     pthread_t dispatcher_thread_id;
     pthread_t ceditor_thread_ids[3];
     pthread_t smanager_thread_id;
 
     // Create producer threads
-    pthread_create(&producer_threads[0], NULL, producer_thread, &p1);
-    pthread_create(&producer_threads[1], NULL, producer_thread, &p2);
-    pthread_create(&producer_threads[2], NULL, producer_thread, &p3);
+    for (size_t i = 0; i < config.producers.size(); ++i) {
+        pthread_create(&producer_threads[i], NULL, producer_thread, producers[i]);
+    }
 
     // Create dispatcher thread
     pthread_create(&dispatcher_thread_id, NULL, dispatcher_thread, &dispatcher);
@@ -80,7 +85,7 @@ int main() {
     pthread_create(&smanager_thread_id, NULL, smanager_thread, &smanager);
 
     // Join producer threads
-    for (int i = 0; i < NUM_PRODUCERS; i++) {
+    for (size_t i = 0; i < config.producers.size(); ++i) {
         pthread_join(producer_threads[i], NULL);
     }
 
@@ -94,6 +99,11 @@ int main() {
 
     // Join smanager thread
     pthread_join(smanager_thread_id, NULL);
+
+    // Clean up producers
+    for (auto& producer : producers) {
+        delete producer;
+    }
 
     return 0;
 }

@@ -26,6 +26,11 @@ int Dispatcher::extractType(std::string element) {
 void Dispatcher::dispatch() {
     while (this->numOfTerminatedBuffers != this->numOfBounded_Buffers) {
         for (auto& bBuffer : this->queues) {
+            if (bBuffer->isEmpty())
+            {
+                continue;   
+            }
+            
             std::string element = bBuffer->remove();
             if (element == "DONE") {
                 this->numOfTerminatedBuffers++;

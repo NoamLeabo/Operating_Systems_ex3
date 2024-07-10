@@ -25,6 +25,7 @@ public:
     string remove();
     string getElementByIndex(int index);
     int getSize();
+    bool isEmpty();
 };
 
 #endif // BOUNDED_BUFFER_H
